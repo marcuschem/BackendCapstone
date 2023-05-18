@@ -14,25 +14,30 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 
 
-from restaurant.views import BookingViewSet
+from restaurant.views import BookingViewSet, UserViewSet
 
 
 router = DefaultRouter()
 router.register(r'tables', BookingViewSet)
-
+router2 = DefaultRouter()
+router2.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('restaurant/menu/', include('restaurant.urls')),
+    path('', include(router2.urls)),
+    path('restaurant', include('restaurant.urls')),
     path('restaurant/booking/', include(router.urls)),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
-]
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
 
